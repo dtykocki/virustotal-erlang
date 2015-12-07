@@ -1,0 +1,16 @@
+{application, 'virustotal',
+ [{description, "OTP application for the VirusTotal API"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {'virustotal_app', []}},
+  {applications,
+   [kernel,
+    stdlib,
+    hackney
+   ]},
+  {env,[]},
+  {modules, [virustotal_app, virustotal_sup, virustotal]},
+  {contributors, []},
+  {licenses, []},
+  {links, []}
+ ]}.
