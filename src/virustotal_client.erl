@@ -1,6 +1,6 @@
 %%%-------------------------------------------------------------------
 %% @author Doug Tykocki <tykockda@gmail.com>
-%% @doc
+%% @doc virustotal HTTP client
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -39,6 +39,6 @@ do_post(Url, Params) ->
       {ok, Decoded};
     403 ->
       {error, permission_denied};
-    203 ->
+    204 ->
       {error, rate_limit}
   end.
