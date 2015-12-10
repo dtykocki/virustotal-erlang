@@ -7,34 +7,34 @@
 -module(virustotal_client).
 
 %% API
--export([url_scan/2, url_report/2, ip_address_report/2]).
+-export([url_scan/2, url_report/2, ip_address_report/2, domain_report/2]).
 
 -define(BASE_URL, <<"https://www.virustotal.com/vtapi/v2">>).
 -define(URL_SCAN_PATH, <<"/url/scan">>).
 -define(URL_REPORT_PATH, <<"/url/report">>).
 -define(IP_REPORT_PATH, <<"/ip-address/report">>).
+-define(DOMAIN_REPORT_PATH, <<"/domain/report">>).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
 
 url_scan(Key, UrlToScan) ->
-  Url = ?BASE_URL,
-  Path = ?URL_SCAN_PATH,
   Body = [{url, UrlToScan}, {apikey, Key}],
-  do_post(Url, Path, Body).
+  do_post(?BASE_URL, ?URL_SCAN_PATH, Body).
 
 url_report(Key, Resource) ->
-  Url = ?BASE_URL,
-  Path = ?URL_REPORT_PATH,
   Body = [{resource, Resource}, {apikey, Key}],
-  do_post(Url, Path, Body).
+  do_post(?BASE_URL, ?URL_REPORT_PATH, Body).
 
 ip_address_report(Key, Resource) ->
-  Url = ?BASE_URL,
-  Path = ?IP_REPORT_PATH,
   Query = [{ip, Resource}, {apikey, Key}],
-  do_get(Url, Path, Query).
+  do_get(?BASE_URL, ?IP_REPORT_PATH, Query).
+
+domain_report(Key, Resource) ->
+  Query = [{domain, Resource}, {apikey, Key}],
+  do_get(?BASE_URL, ?DOMAIN_REPORT_PATH, Query).
+
 
 %%%===================================================================
 %%% Internal Functions
