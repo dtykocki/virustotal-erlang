@@ -9,7 +9,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start/2, start_link/2, url_scan/2, sync_url_scan/2, url_report/2]).
+-export([start/2, start_link/2, url_scan/2, sync_url_scan/2, url_report/2, ip_address_report/2]).
 
 %% GenServer callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
@@ -35,6 +35,9 @@ sync_url_scan(Name, Resource) ->
 url_report(Name, Resource) ->
   gen_server:call(Name, {url_report, Resource}).
 
+ip_address_report(Name, Resource) ->
+  gen_server:call(Name, {ip_address_report, Resource}).
+
 %%%===================================================================
 %%% GenServer callbacks
 %%%===================================================================
@@ -47,6 +50,9 @@ handle_call({url_scan, Resource}, _From, #state{key=Key} = State) ->
   {reply, Reply, State};
 handle_call({url_report, Resource}, _From, #state{key=Key} = State) ->
   Reply = virustotal_client:url_report(Key, Resource),
+  {reply, Reply, State};
+handle_call({ip_address_report, Resource}, _From, #state{key=Key} = State) ->
+  Reply = virustotal_client:ip_address_report(Key, Resource),
   {reply, Reply, State}.
 
 handle_cast({url_scan, Resource}, #state{key=Key} = State) ->
