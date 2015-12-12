@@ -10,7 +10,7 @@
 
 %% API
 -export([start/2, start_link/2]).
--export([url_scan/2, sync_url_scan/2, url_report/2, ip_address_report/2, domain_report/2]).
+-export([file_scan/2, url_scan/2, sync_url_scan/2, url_report/2, ip_address_report/2, domain_report/2]).
 
 %% GenServer callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
@@ -26,6 +26,9 @@ start(Name, Key) ->
 
 start_link(Name, Key) ->
   gen_server:start_link({local, Name}, ?MODULE, [Key], []).
+
+file_scan(Name, Resource) ->
+  gen_server:call(Name, {file_scan, Resource}).
 
 url_scan(Name, Resource) ->
   gen_server:cast(Name, {url_scan, Resource}).
@@ -49,6 +52,9 @@ domain_report(Name, Resource) ->
 init([Key]) ->
   {ok, #state{key = Key}}.
 
+handle_call({file_scan, Resource}, _From, #state{key=Key} = State) ->
+  Reply = virustotal_client:file_scan(Key, Resource),
+  {reply, Reply, State};
 handle_call({url_scan, Resource}, _From, #state{key=Key} = State) ->
   Reply = virustotal_client:url_scan(Key, Resource),
   {reply, Reply, State};
