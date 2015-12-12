@@ -7,9 +7,10 @@
 -module(virustotal_client).
 
 %% API
--export([url_scan/2, url_report/2, ip_address_report/2, domain_report/2]).
+-export([file_scan/2, url_scan/2, url_report/2, ip_address_report/2, domain_report/2]).
 
 -define(BASE_URL, <<"https://www.virustotal.com/vtapi/v2">>).
+-define(FILE_SCAN_PATH, <<"/file/scan">>).
 -define(URL_SCAN_PATH, <<"/url/scan">>).
 -define(URL_REPORT_PATH, <<"/url/report">>).
 -define(IP_REPORT_PATH, <<"/ip-address/report">>).
@@ -19,13 +20,17 @@
 %%% API
 %%%===================================================================
 
+file_scan(Key, PathToFile) ->
+  Body = [{file, PathToFile}, {<<"apikey">>, Key}],
+  do_post(multipart, ?FILE_SCAN_PATH, Body).
+
 url_scan(Key, UrlToScan) ->
   Body = [{url, UrlToScan}, {apikey, Key}],
-  do_post(?BASE_URL, ?URL_SCAN_PATH, Body).
+  do_post(form, ?URL_SCAN_PATH, Body).
 
 url_report(Key, Resource) ->
   Body = [{resource, Resource}, {apikey, Key}],
-  do_post(?BASE_URL, ?URL_REPORT_PATH, Body).
+  do_post(form, ?URL_REPORT_PATH, Body).
 
 ip_address_report(Key, Resource) ->
   Query = [{ip, Resource}, {apikey, Key}],
@@ -54,9 +59,16 @@ do_get(BaseUrl, Path, Query) ->
       {error, rate_limit}
   end.
 
-do_post(BaseUrl, Path, Params) ->
-  Url = hackney_url:make_url(BaseUrl, Path, []),
+do_post(form, Path, Params) ->
+  Url = hackney_url:make_url(?BASE_URL, Path, []),
   ReqBody = {form, Params},
+  do_post(Url, ReqBody);
+do_post(multipart, Path, Params) ->
+  Url = hackney_url:make_url(?BASE_URL, Path, []),
+  ReqBody = {multipart, Params},
+  do_post(Url, ReqBody).
+
+do_post(Url, ReqBody) ->
   {ok, StatusCode, _, ClientRef} = hackney:request(post, Url, [], ReqBody, []),
   case StatusCode of
     200 ->
