@@ -9,7 +9,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start/2, start_link/2]).
+-export([start/2, start_link/2, stop/1]).
 -export([file_scan/2, file_report/2,
          url_scan/2, sync_url_scan/2, url_report/2,
          ip_address_report/2, domain_report/2]).
@@ -28,6 +28,9 @@ start(Name, Key) ->
 
 start_link(Name, Key) ->
   gen_server:start_link({local, Name}, ?MODULE, [Key], []).
+
+stop(Name) ->
+  gen_server:call(Name, stop).
 
 file_scan(Name, Resource) ->
   gen_server:call(Name, {file_scan, Resource}).
@@ -56,6 +59,9 @@ domain_report(Name, Resource) ->
 
 init([Key]) ->
   {ok, #state{key = Key}}.
+
+handle_call(stop, _From, State) ->
+  {stop, normal, stopped, State};
 
 handle_call({file_scan, Resource}, _From, #state{key=Key} = State) ->
   Reply = virustotal_client:file_scan(Key, Resource),

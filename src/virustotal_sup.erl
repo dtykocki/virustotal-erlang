@@ -36,7 +36,7 @@ init([]) ->
                period => 10},
   ChildSpecs = [#{id => virustotal,
                  start => {virustotal, start_link, []},
-                 restart => permanent,
+                 restart => transient,
                  shutdown => 5000,
                  type => worker,
                  modules => [virustotal]}],
