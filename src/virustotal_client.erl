@@ -7,10 +7,13 @@
 -module(virustotal_client).
 
 %% API
--export([file_scan/2, url_scan/2, url_report/2, ip_address_report/2, domain_report/2]).
+-export([file_scan/2, file_report/2,
+         url_scan/2, url_report/2,
+         ip_address_report/2, domain_report/2]).
 
 -define(BASE_URL, <<"https://www.virustotal.com/vtapi/v2">>).
 -define(FILE_SCAN_PATH, <<"/file/scan">>).
+-define(FILE_REPORT_PATH, <<"/file/report">>).
 -define(URL_SCAN_PATH, <<"/url/scan">>).
 -define(URL_REPORT_PATH, <<"/url/report">>).
 -define(IP_REPORT_PATH, <<"/ip-address/report">>).
@@ -23,6 +26,10 @@
 file_scan(Key, PathToFile) ->
   Body = [{file, PathToFile}, {<<"apikey">>, Key}],
   do_post(multipart, ?FILE_SCAN_PATH, Body).
+
+file_report(Key, Resource) ->
+  Body = [{resource, Resource}, {apikey, Key}],
+  do_post(form, ?FILE_REPORT_PATH, Body).
 
 url_scan(Key, UrlToScan) ->
   Body = [{url, UrlToScan}, {apikey, Key}],
