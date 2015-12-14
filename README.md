@@ -2,6 +2,8 @@
 
 **virustotal-erlang** is an OTP Erlang application for the [`VirusTotal Public API v2.0`](https://www.virustotal.com/en/documentation/public-api/v2/).
 
+[![Build Status](https://travis-ci.org/dtykocki/virustotal-erlang.svg)](https://travis-ci.org/dtykocki/virustotal-erlang)
+
 ## Things you can do with `virustotal-erlang`:
 1. Start several `gen_servers` representing different applications defined by different VirusTotal API keys.
 2. Send and scan files.
