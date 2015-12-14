@@ -8,5 +8,9 @@
   {git,"git://github.com/talentdeficit/jsx.git",
        {ref,"3074d4865b3385a050badf7828ad31490d860df5"}},
   0},
+ {<<"meck">>,
+  {git,"git://github.com/eproxus/meck.git",
+       {ref,"17b0ea5b7d9c93af3a52b5152c6bee14302b3885"}},
+  0},
  {<<"mimerl">>,{pkg,<<"mimerl">>,<<"1.0.0">>},1},
  {<<"ssl_verify_hostname">>,{pkg,<<"ssl_verify_hostname">>,<<"1.0.5">>},1}].
