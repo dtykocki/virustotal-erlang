@@ -9,7 +9,7 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0, start_child/2]).
+-export([start_link/0, start_child/2, stop_child/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -24,20 +24,24 @@ start_link() ->
   supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 start_child(Name, ApiKey) ->
-  supervisor:start_child(?MODULE, [Name, ApiKey]).
+  supervisor:start_child(?SERVER, poolboy:child_spec(
+    Name,
+    [{name, {local, Name}},
+      {worker_module, virustotal},
+      {size, 5}, {max_overflow, 10}],
+    [ApiKey])).
+
+stop_child(Name) ->
+  supervisor:terminate_child(?SERVER, Name),
+  supervisor:delete_child(?SERVER, Name).
 
 %%====================================================================
 %% Supervisor callbacks
 %%====================================================================
 
 init([]) ->
-  SupFlags = #{strategy => simple_one_for_one,
+  SupFlags = #{strategy => one_for_one,
                intensity => 5,
                period => 10},
-  ChildSpecs = [#{id => virustotal,
-                 start => {virustotal, start_link, []},
-                 restart => transient,
-                 shutdown => 5000,
-                 type => worker,
-                 modules => [virustotal]}],
+  ChildSpecs = [],
   {ok, {SupFlags, ChildSpecs}}.

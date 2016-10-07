@@ -13,4 +13,8 @@
        {ref,"17b0ea5b7d9c93af3a52b5152c6bee14302b3885"}},
   0},
  {<<"mimerl">>,{pkg,<<"mimerl">>,<<"1.0.0">>},1},
+ {<<"poolboy">>,
+  {git,"git@github.com:devinus/poolboy.git",
+       {ref,"d378f996182daa6251ad5438cee4d3f6eb7ea50f"}},
+  0},
  {<<"ssl_verify_hostname">>,{pkg,<<"ssl_verify_hostname">>,<<"1.0.5">>},1}].
