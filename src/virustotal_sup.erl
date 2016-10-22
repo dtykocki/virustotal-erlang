@@ -15,6 +15,7 @@
 -export([init/1]).
 
 -define(SERVER, ?MODULE).
+-define(CACHE_NAME, virustotal).
 
 %%====================================================================
 %% API
@@ -44,4 +45,5 @@ init([]) ->
                intensity => 5,
                period => 10},
   ChildSpecs = [],
+  ets:new(?CACHE_NAME, [set, named_table, public]),
   {ok, {SupFlags, ChildSpecs}}.

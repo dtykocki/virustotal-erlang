@@ -18,6 +18,7 @@
 -define(URL_REPORT_PATH, <<"/url/report">>).
 -define(IP_REPORT_PATH, <<"/ip-address/report">>).
 -define(DOMAIN_REPORT_PATH, <<"/domain/report">>).
+-define(CACHE_NAME, virustotal).
 
 %%%===================================================================
 %%% API
@@ -29,7 +30,7 @@ file_scan(Key, PathToFile) ->
 
 file_report(Key, Resource) ->
   Body = [{resource, Resource}, {apikey, Key}],
-  do_post(form, ?FILE_REPORT_PATH, Body).
+  cache_and_post(form, ?FILE_REPORT_PATH, Body).
 
 url_scan(Key, UrlToScan) ->
   Body = [{url, UrlToScan}, {apikey, Key}],
@@ -37,7 +38,7 @@ url_scan(Key, UrlToScan) ->
 
 url_report(Key, Resource) ->
   Body = [{resource, Resource}, {apikey, Key}],
-  do_post(form, ?URL_REPORT_PATH, Body).
+  cache_and_post(form, ?URL_REPORT_PATH, Body).
 
 ip_address_report(Key, Resource) ->
   Query = [{ip, Resource}, {apikey, Key}],
@@ -58,7 +59,7 @@ do_get(BaseUrl, Path, Query) ->
   case StatusCode of
     200 ->
       {ok, Body} = hackney:body(ClientRef),
-      Decoded = jsx:decode(Body, [{labels, atom}]),
+      Decoded = jsx:decode(Body, [{labels, atom}, return_maps]),
       {ok, Decoded};
     403 ->
       {error, permission_denied};
@@ -86,4 +87,12 @@ do_post(Url, ReqBody) ->
       {error, permission_denied};
     204 ->
       {error, rate_limit}
+  end.
+
+cache_and_post(form, Path, [Data | _] = Body) ->
+  case ets:lookup(?CACHE_NAME, Data) of
+    [] -> Result = do_post(form, Path, Body),
+      ets:insert(?CACHE_NAME, {Data, Result}),
+      Result;
+    [{Data, Cached}] -> Cached
   end.
