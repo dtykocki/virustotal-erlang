@@ -81,7 +81,7 @@ do_post(Url, ReqBody) ->
   case StatusCode of
     200 ->
       {ok, Body} = hackney:body(ClientRef),
-      Decoded = jsx:decode(Body, [{labels, atom}]),
+      Decoded = jsx:decode(Body, [{labels, atom}, return_maps]),
       {ok, Decoded};
     403 ->
       {error, permission_denied};
